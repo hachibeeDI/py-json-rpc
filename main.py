@@ -1,12 +1,3 @@
-# PY-JSON-RPC
-
-JSON RPC toolkit to make server easy like Flask.
-
-
-## Example
-
-```python
-
 import json
 
 import requests
@@ -55,7 +46,6 @@ if __name__ == '__main__':
     app.listen(8888)
     tornado.ioloop.IOLoop.current().start()
 
-
     """
     example to make rpc request
     """
@@ -63,11 +53,3 @@ if __name__ == '__main__':
     # => {"jsonrpc": "2.0", "result": "cccc  called", "id": "some_uuid_for_you"}
     print(requests.post('http://localhost:8888/rpc', data=json.dumps(make_request('test/hyoe', {'x': 3, 'y': 3}))).text)
     # => "jsonrpc": "2.0", "result": 6, "id": "cff9667f-a520-42cf-9216-ef2fa051a213"}
-```
-
-
-## Road Map
-
-- WebSocket
-
-- MQTT server
