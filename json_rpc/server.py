@@ -18,5 +18,8 @@ class RPCHandler(tornado.web.RequestHandler):
 
     def post(self):
         rpc_request = json.loads(self.request.body)
-        result = rpc_dispatcher(**rpc_request)
+        if isinstance(rpc_request, list):
+            result = [rpc_dispatcher(**r) for r in rpc_request]
+        else:
+            result = [rpc_dispatcher(**rpc_request)]
         self.write(json.dumps(result))
