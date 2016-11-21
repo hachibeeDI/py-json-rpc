@@ -1,6 +1,6 @@
 # PY-JSON-RPC
 
-JSON RPC toolkit to make server easy like Flask.
+JSON RPC toolkit to make server easily like Flask.
 
 
 ## Example
