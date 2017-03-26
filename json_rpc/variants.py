@@ -18,13 +18,3 @@ class ErrorCode(Enum):
 
     # error for application specific error which is unexpected
     UNEXPECTED_ERROR = -32099
-
-
-    CODE_TO_MESSAGE = {
-        PARSE_ERROR: 'Parse error Invalid JSON was received by the server.  An error occurred on the server while parsing the JSON text.',
-        INVALID_REQUEST: 'The JSON sent is not a valid Request object.',
-        METHOD_NOT_FOUND: 'The method does not exist / is not available.',
-        INVALID_PARAMS: 'Invalid method parameter(s).',
-        INTERNAL_ERROR: 'Internal JSON-RPC error.',
-        UNEXPECTED_ERROR: 'unexpected error is occurred',
-    }
