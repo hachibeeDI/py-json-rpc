@@ -51,3 +51,24 @@ def test_application_error():
 
     error = rpc_result['error']
     assert error['code'] == ErrorCode.UNEXPECTED_ERROR, rpc_result
+
+
+def test_batch_contains_error():
+    correct_result = {
+        'jsonrpc': '2.0',
+        'method': 'identity',
+        'params': ['rpc'],
+        'id': 111,
+    }
+    invalid_result = {
+        'jsonrpc': '2.0',
+        'method': 'erraiser',
+        'id': 111,
+    }
+    rpc_result = rpc_dispatcher([correct_result, invalid_result])
+
+    assert 'result' in rpc_result[0], rpc_result
+    assert 'error' in rpc_result[1], rpc_result
+
+    error = rpc_result[1]['error']
+    assert error['code'] == ErrorCode.UNEXPECTED_ERROR, rpc_result

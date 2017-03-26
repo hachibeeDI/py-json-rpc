@@ -12,7 +12,8 @@ from typing import (
 )
 
 
-JSON_RPC_VERSION = '2.0'
+from .variants import JSON_RPC_VERSION, ErrorCode
+from .error import create_error_response, code_to_response
 
 RPC_STACK = {}
 
@@ -44,49 +45,56 @@ def register(target):
         return __inner
 
 
-def _call(name, params):
+def _call(id, name, params: Union[List, Dict]) -> Dict:
     """
     JSON-RPC supports positional arguments and named arguments.
     """
-    if isinstance(params, (list, tuple)):
-        return RPC_STACK[name](*params)
-    elif isinstance(params, dict):
-        return RPC_STACK[name](**params)
+    from inspect import signature
 
+    if name not in RPC_STACK:
+        return code_to_response(id, ErrorCode.METHOD_NOT_FOUND)
 
-def _rpc_error(id, code, message):
+    function = RPC_STACK[name]
+    parameter_spec = signature(function).parameters
+
+    result = None
+    if isinstance(params, List):
+        if len(params) != len(parameter_spec):
+            return code_to_response(id, ErrorCode.INVALID_PARAMS)
+
+        result = function(*params)
+
+    elif isinstance(params, Dict):
+        if set(params.keys()) != set(parameter_spec.keys()):
+            return code_to_response(id, ErrorCode.INVALID_PARAMS)
+
+        result = function(**params)
+
+    else:
+        return code_to_response(id, ErrorCode.INVALID_REQUEST)
+
     return {
         'jsonrpc': JSON_RPC_VERSION,
-        'error': {
-            'code': code,
-            'message': message,
-        },
+        'result': result,
         'id': id,
     }
 
 
-def _eval(jsonrpc, method, params, id):
-    if method not in RPC_STACK:
-        return _rpc_error(id, 'NameError', "name '{}' is not defined".format(method))
+def _eval(jsonrpc, method, id, params=None):
+    if params is None:
+        params = []
 
     try:
-        result = _call(method, params)
+        return _call(id, method, params)
     except Exception as e:
-        return _rpc_error(id, e.__class__.__name__, e.message)
-
-    else:
-        return {
-            'jsonrpc': JSON_RPC_VERSION,
-            'result': result,
-            'id': id,
-        }
+        return code_to_response(id, ErrorCode.UNEXPECTED_ERROR, str(e))
 
 
 def rpc_dispatcher(request: Union[List, Dict]):
     """
     """
     if isinstance(request, List):
-        return [_eval(**r) for r in request]
+        return list(filter(None, [_eval(**r) for r in request]))
     elif isinstance(request, Dict):
         return _eval(**request)
     else:

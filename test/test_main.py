@@ -16,12 +16,6 @@ loader = unittest.TestLoader()
 # suite.addTests(doctest.DocTestSuite(letexpr))
 
 
-# define method very easy
-@register
-def identity(aa):
-    return aa + ' called'
-
-
 # you can appoint method name for rpc call
 @register('plus')
 def plus(x, y):
@@ -30,7 +24,7 @@ def plus(x, y):
 
 def test_plain():
     result = plus(1, 2)
-    assert result == 3
+    assert result == 3, result
 
 
 def test_positional_rpc_call():
@@ -40,7 +34,7 @@ def test_positional_rpc_call():
         'params': [1, 2],
         'id': 111,
     })
-    assert rpc_result['result'] == 3
+    assert rpc_result.get('result') == 3, rpc_result
 
 
 def test_named_rpc_call():
@@ -50,7 +44,7 @@ def test_named_rpc_call():
         'params': {'x': 1, 'y': 2},
         'id': 111,
     })
-    assert rpc_result['result'] == 3
+    assert rpc_result.get('result') == 3, rpc_result
 
 
 def test_multiple():
@@ -67,5 +61,5 @@ def test_multiple():
         'id': 111,
     }
     rpc_result = rpc_dispatcher([req1, req2])
-    assert rpc_result[0]['result'] == 3
-    assert rpc_result[1]['result'] == 30
+    assert rpc_result[0].get('result') == 3, rpc_result
+    assert rpc_result[1].get('result') == 30, rpc_result
