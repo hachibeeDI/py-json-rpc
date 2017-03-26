@@ -5,6 +5,11 @@ from __future__ import print_function, unicode_literals, absolute_import
 
 from uuid import uuid4
 from functools import wraps
+from typing import (
+    Dict,
+    List,
+    Union,
+)
 
 
 JSON_RPC_VERSION = '2.0'
@@ -60,7 +65,7 @@ def _rpc_error(id, code, message):
     }
 
 
-def rpc_dispatcher(jsonrpc, method, params, id):
+def _eval(jsonrpc, method, params, id):
     if method not in RPC_STACK:
         return _rpc_error(id, 'NameError', "name '{}' is not defined".format(method))
 
@@ -75,6 +80,17 @@ def rpc_dispatcher(jsonrpc, method, params, id):
             'result': result,
             'id': id,
         }
+
+
+def rpc_dispatcher(request: Union[List, Dict]):
+    """
+    """
+    if isinstance(request, List):
+        return [_eval(**r) for r in request]
+    elif isinstance(request, Dict):
+        return _eval(**request)
+    else:
+        assert False, 'contract error'
 
 
 def make_request(method, params):

@@ -34,13 +34,13 @@ if __name__ == '__main__':
     # => 'cc called'
 
     # you can call function via json rpc protocol
-    rpc = rpc_dispatcher(**{
+    rpc = rpc_dispatcher({
         'jsonrpc': '2.0',
         'method': 'aa',
         'params': {'aa': 'rpc'},
         'id': 111,
     })
-    rpc2 = rpc_dispatcher(**make_request('test/hyoe', {'x': 20, 'y': 10}))
+    rpc2 = rpc_dispatcher(make_request('test/hyoe', {'x': 20, 'y': 10}))
     print(json.dumps(rpc))
     # => {"jsonrpc": "2.0", "result": "cccc  called", "id": "111"}
     print(json.dumps(rpc))
