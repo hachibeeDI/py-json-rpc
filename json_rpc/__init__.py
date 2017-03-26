@@ -13,13 +13,13 @@ RPC_STACK = {}
 
 
 def register(target):
-    if isinstance(target, basestring):
+    if isinstance(target, str):
         # call as decorator with argument
         def decorate(func):
 
             @wraps(func)
-            def __inner(**kw):
-                return func(**kw)
+            def __inner(*args, **kw):
+                return func(*args, **kw)
 
             RPC_STACK[target] = __inner
             return __inner
@@ -35,7 +35,7 @@ def register(target):
         def __inner(**kw):
             return func(**kw)
 
-        RPC_STACK[func.func_name] = __inner
+        RPC_STACK[func.__name__] = __inner
         return __inner
 
 
