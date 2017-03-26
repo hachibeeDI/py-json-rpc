@@ -13,13 +13,13 @@ RPC_STACK = {}
 
 
 def register(target):
-    if isinstance(target, basestring):
+    if isinstance(target, str):
         # call as decorator with argument
         def decorate(func):
 
             @wraps(func)
-            def __inner(**kw):
-                return func(**kw)
+            def __inner(*args, **kw):
+                return func(*args, **kw)
 
             RPC_STACK[target] = __inner
             return __inner
@@ -32,18 +32,21 @@ def register(target):
         func = target
 
         @wraps(func)
-        def __inner(**kw):
-            return func(**kw)
+        def __inner(*args, **kw):
+            return func(*args, **kw)
 
-        RPC_STACK[func.func_name] = __inner
+        RPC_STACK[func.__name__] = __inner
         return __inner
 
 
 def _call(name, params):
     """
-    RPC call should be always named call because these are JSON
+    JSON-RPC supports positional arguments and named arguments.
     """
-    return RPC_STACK[name](**params)
+    if isinstance(params, (list, tuple)):
+        return RPC_STACK[name](*params)
+    elif isinstance(params, dict):
+        return RPC_STACK[name](**params)
 
 
 def _rpc_error(id, code, message):
