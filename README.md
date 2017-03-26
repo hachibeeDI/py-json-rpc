@@ -66,6 +66,12 @@ if __name__ == '__main__':
 ```
 
 
+## Support version
+
+Greater than or equal to Python 3.6
+
+
+
 ## Road Map
 
 - WebSocket
