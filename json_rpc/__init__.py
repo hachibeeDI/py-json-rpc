@@ -73,6 +73,10 @@ def _call(id, name, params: Union[List, Dict]) -> Dict:
     else:
         return code_to_response(id, ErrorCode.INVALID_REQUEST)
 
+    # notification request has no id
+    if id is None:
+        return None
+
     return {
         'jsonrpc': JSON_RPC_VERSION,
         'result': result,
@@ -80,7 +84,7 @@ def _call(id, name, params: Union[List, Dict]) -> Dict:
     }
 
 
-def _eval(jsonrpc, method, id, params=None):
+def _eval(jsonrpc, method, id=None, params=None):
     if params is None:
         params = []
 

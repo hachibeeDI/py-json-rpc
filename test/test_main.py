@@ -63,3 +63,30 @@ def test_multiple():
     rpc_result = rpc_dispatcher([req1, req2])
     assert rpc_result[0].get('result') == 3, rpc_result
     assert rpc_result[1].get('result') == 30, rpc_result
+
+
+def test_notify():
+    rpc_result = rpc_dispatcher({
+        'jsonrpc': '2.0',
+        'method': 'plus',
+        'params': {'x': 1, 'y': 2},
+    })
+    assert rpc_result is None, rpc_result
+
+
+def test_notify_multiple():
+    req1 = {
+        'jsonrpc': '2.0',
+        'method': 'plus',
+        'params': [1, 2],
+        'id': 111,
+    }
+    req2 = {
+        'jsonrpc': '2.0',
+        'method': 'plus',
+        'params': [10, 20],
+    }
+    rpc_result = rpc_dispatcher([req1, req2])
+
+    assert len(rpc_result) == 1, rpc_result
+    assert rpc_result[0].get('result') == 3, rpc_result
