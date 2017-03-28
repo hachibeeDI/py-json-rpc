@@ -9,7 +9,7 @@ readme_content = open('README.md').read()
 
 setup(
     name='py-json-rpc',
-    version='0.0.1',
+    version='0.0.3',
     description='Decorator based toolkit to use JSONRPC easy like Flask',
     long_description=readme_content,
     author='OGURA_Daiki',
@@ -18,7 +18,6 @@ setup(
     keywords=['json rpc', 'smart home'],
     url='https://github.com/hachibeeDI/py-json-rpc',
     packages=find_packages(),
-    scripts=['bin/json_rpc'],
     install_requires=install_requires,
     classifiers=[
         "Development Status :: 4 - Beta",
