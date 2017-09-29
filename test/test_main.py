@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import (print_function, division, absolute_import, unicode_literals,)
 
-import json
 import unittest
 
 from nose.tools import eq_
 
-from json_rpc import register, rpc_dispatcher, make_request
-from json_rpc.server import RPCHandler
+from json_rpc import register, rpc_dispatcher
+from json_rpc.server.http import RPCHandler as HTTPHandler  # TODO:
+from json_rpc.server.ws import RPCHandler as WebSocketHandler  # TODO:
 
 
 suite = unittest.TestSuite()

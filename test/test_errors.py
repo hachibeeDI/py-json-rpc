@@ -1,4 +1,4 @@
-from json_rpc import register, rpc_dispatcher, make_request
+from json_rpc import register, rpc_dispatcher
 from json_rpc.variants import ErrorCode
 
 
