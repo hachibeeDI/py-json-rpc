@@ -5,7 +5,9 @@ import tornado.ioloop
 import tornado.web
 
 from json_rpc import register, rpc_dispatcher, make_request
-from json_rpc.server import RPCHandler
+from json_rpc.server.http import RPCHandler as HTTPHandler
+from json_rpc.server.ws import RPCHandler as WebSocketHandler
+
 
 # define method very easy
 @register
@@ -40,7 +42,8 @@ if __name__ == '__main__':
     # there is HTTP server to receive rpc call
     def make_app():
         return tornado.web.Application([
-            (r'/rpc', RPCHandler),
+            (r'/rpc', HTTPHandler),
+            (r'/ws', WebSocketHandler),
         ])
     app = make_app()
     app.listen(8888)
