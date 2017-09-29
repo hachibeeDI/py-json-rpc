@@ -4,6 +4,7 @@ import json
 
 import tornado.ioloop
 import tornado.web
+from tornado.websocket import WebSocketHandler
 
 from . import rpc_dispatcher
 
@@ -21,3 +22,16 @@ class RPCHandler(tornado.web.RequestHandler):
         result = rpc_dispatcher(rpc_request)
 
         self.write(json.dumps(result))
+
+
+class WebSocketHandler(WebSocketHandler):
+    def open(self):
+        pass
+
+    def on_message(self, message):
+        rpc_request = json.loads(message)
+        result = rpc_dispatcher(rpc_request)
+        self.write_message(json.dumps(result))
+
+    def on_close(self):
+        pass
