@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/hachibeeDI/py-json-rpc.svg?style=svg)](https://circleci.com/gh/hachibeeDI/py-json-rpc)
+
 # PY-JSON-RPC
 
 JSON RPC toolkit to declare procedures super easy like Flask.
