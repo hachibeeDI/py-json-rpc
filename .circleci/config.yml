@@ -1,0 +1,14 @@
+machine:
+  python:
+    version: 3.6.3
+
+dependencies:
+  pre:
+    - pip install -r requirements.txt
+    - pip install nose
+
+test:
+  # pre:
+  #   - flake8 sandbox
+  override:
+    - nosetests
