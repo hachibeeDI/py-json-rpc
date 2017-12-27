@@ -2,7 +2,14 @@
 
 # PY-JSON-RPC
 
-JSON RPC toolkit to declare procedures super easy like Flask.
+Simple and Pluggable JSON RPC toolkit to declare procedures super easy like Flask.
+
+
+## Install
+
+```sh
+$ pip install py-json-rpc
+```
 
 
 ## Example
@@ -67,6 +74,43 @@ if __name__ == '__main__':
     print(requests.post('http://localhost:8888/rpc', data=json.dumps(make_request('test/hyoe', {'x': 3, 'y': 3}))).text)
     # => "jsonrpc": "2.0", "result": 6, "id": "cff9667f-a520-42cf-9216-ef2fa051a213"}
 ```
+
+
+### Integrate with Flask
+
+Small sample
+
+```python
+import json
+
+from flask import Flask, request
+from json_rpc import register, rpc_dispatcher
+
+
+app = Flask(__name__)
+
+
+@register
+def hoge(name):
+    return f'{name} called'
+
+
+@app.route('/', methods=['POST'])
+def hello():
+    result = rpc_dispatcher(request.json)
+    return json.dumps(result)
+```
+
+To test:
+
+```python
+>>> print(requests.post('http://localhost:5000', json=make_request('hoge', ['cccc'])).text)
+```
+
+
+### Integrate with Django
+
+See Flask.  View can be integrate with this module easily.
 
 
 ## Fully supports JSON RPC protocol
