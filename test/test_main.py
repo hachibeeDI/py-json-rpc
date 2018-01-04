@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import (print_function, division, absolute_import, unicode_literals,)
 
-import json
 import unittest
 
 from nose.tools import eq_
@@ -90,3 +89,19 @@ def test_notify_multiple():
 
     assert len(rpc_result) == 1, rpc_result
     assert rpc_result[0].get('result') == 3, rpc_result
+
+
+def test_make_request_named_arg():
+    created_request = make_request('test_created', {'x': 1, 'y': 2})
+    assert created_request['jsonrpc'] == '2.0'
+    assert created_request['method'] == 'test_created'
+    assert created_request['params'] == {'x': 1, 'y': 2}
+    # generated id is random so cannot test that
+
+
+def test_make_request_positional_arg():
+    created_request = make_request('test_created_positional', ['first', 'second', 'third'])
+    assert created_request['jsonrpc'] == '2.0'
+    assert created_request['method'] == 'test_created_positional'
+    assert created_request['params'] == ['first', 'second', 'third']
+    # generated id is random so cannot test that
