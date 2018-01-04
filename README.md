@@ -74,6 +74,12 @@ if __name__ == '__main__':
 ```
 
 
+### Integrate with Tornado
+
+You can see `from json_rpc.server.http import create_handler` and the usage in the example on above.  A function `create_handler` will create a handler instance for Tornado.
+Please be aware that the instance haven't implement any security functionality.  In case you'd like to a RPC end point to be public, you might want to consider create a handler by yourself (or feel free to open an issue ...or PR of course!).
+
+
 ### Integrate with Flask
 
 Small sample
@@ -123,6 +129,10 @@ Greater than or equal to Python 3.6
 
 ## Road Map
 
-- WebSocket
+- async/await support
 
-- MQTT server
+- Security instruction
+
+- WebSocket sample
+
+- MQTT server or GNATS daemon sample
