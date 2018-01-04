@@ -5,7 +5,8 @@ import tornado.ioloop
 import tornado.web
 
 from json_rpc import register, rpc_dispatcher, make_request
-from json_rpc.server import RPCHandler
+from json_rpc.server.http import create_handler
+
 
 # define method very easy
 @register
@@ -25,13 +26,13 @@ if __name__ == '__main__':
     # => 'cc called'
 
     # you can call function via json rpc protocol
-    rpc = rpc_dispatcher(**{
+    rpc = rpc_dispatcher({
         'jsonrpc': '2.0',
         'method': 'aa',
         'params': {'aa': 'rpc'},
         'id': 111,
     })
-    rpc2 = rpc_dispatcher(**make_request('test/hyoe', {'x': 20, 'y': 10}))
+    rpc2 = rpc_dispatcher(make_request('test/hyoe', {'x': 20, 'y': 10}))
     print(json.dumps(rpc))
     # => {"jsonrpc": "2.0", "result": "cccc  called", "id": "111"}
     print(json.dumps(rpc))
@@ -40,7 +41,7 @@ if __name__ == '__main__':
     # there is HTTP server to receive rpc call
     def make_app():
         return tornado.web.Application([
-            (r'/rpc', RPCHandler),
+            (r'/rpc', create_handler(tornado.web.RequestHandler)),
         ])
     app = make_app()
     app.listen(8888)

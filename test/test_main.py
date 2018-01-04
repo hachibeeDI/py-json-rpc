@@ -7,7 +7,7 @@ import unittest
 from nose.tools import eq_
 
 from json_rpc import register, rpc_dispatcher, make_request
-from json_rpc.server import RPCHandler
+from json_rpc.server.http import create_handler
 
 
 suite = unittest.TestSuite()
