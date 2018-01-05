@@ -15,7 +15,7 @@ from typing import (
 
 
 from .variants import JSON_RPC_VERSION, ErrorCode
-from .error import create_error_response, code_to_response
+from ._error import create_error_response, code_to_response
 
 RPC_STACK = {}
 
