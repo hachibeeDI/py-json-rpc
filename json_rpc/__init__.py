@@ -9,6 +9,8 @@ from typing import (
     Dict,
     List,
     Union,
+    Optional,
+    Any,
 )
 
 
@@ -19,6 +21,25 @@ RPC_STACK = {}
 
 
 def register(target):
+    """
+    Decorator to register functions as Remote procedure.
+
+    In default, rpc method name will be the name of function.
+    First argument would be a name of the method.
+
+    Example:
+
+    >>> @register
+    ... def func_x(a, b, c):
+    ...     pass
+    ...
+
+    >>> @register('named')
+    ... def func_named(a, b, c):
+    ...     pass
+    ...
+    """
+
     if isinstance(target, str):
         # call as decorator with argument
         def decorate(func):
@@ -96,22 +117,32 @@ def _eval(jsonrpc, method, id=None, params=None):
 
 def rpc_dispatcher(request: Union[List, Dict]):
     """
+    Dispatcher for rpc request.
+    Receive a JSON-rpc request then returns a result.
+    The request must be follows JSON-rpc protocol.  Basically a dict but it can be a list if it is batch.
     """
+
     if isinstance(request, List):
         return list(filter(None, [_eval(**r) for r in request]))
     elif isinstance(request, Dict):
         return _eval(**request)
     else:
-        assert False, 'contract error'
+        assert False, 'Invalid request'
 
 
-def make_request(method, params):
+def make_request(method: str, params: Union[List, Dict[str, Any]], request_id: Optional[str]=None):
     """
-    e.g. {"jsonrpc": "2.0", "method": "aa", "params": {"aa": "rpc"}, "id": 111}
+    Helper function to create a request follows JSON-rpc protocol.
+
+    >>> make_request('aa', {"aa": "rpc"}, '111')
+    {"jsonrpc": "2.0", "method": "aa", "params": {"aa": "rpc"}, "id": "111"}
     """
+
+    if not request_id:
+        request_id = str(uuid4())
     return {
         'jsonrpc': JSON_RPC_VERSION,
         'params': params,
         'method': method,
-        'id': str(uuid4()),
+        'id': request_id,
     }

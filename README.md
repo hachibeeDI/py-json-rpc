@@ -47,7 +47,7 @@ if __name__ == '__main__':
         'jsonrpc': '2.0',
         'method': 'aa',
         'params': {'aa': 'rpc'},
-        'id': 111,
+        'id': '111',
     })
     rpc2 = rpc_dispatcher(make_request('test/hyoe', {'x': 20, 'y': 10}))
     print(json.dumps(rpc))
