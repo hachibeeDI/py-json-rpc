@@ -6,9 +6,16 @@
 Welcome to py-json-rpc's documentation!
 =======================================
 
+Simple and Pluggable JSON RPC toolkit to declare procedures super easy like Flask.
+
+https://github.com/hachibeeDI/py-json-rpc
+
 .. toctree::
+   :glob:
    :maxdepth: 2
    :caption: Contents:
+
+   apis/*
 
 
 
