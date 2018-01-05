@@ -1,0 +1,216 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>json_rpc package &#8212; py-json-rpc 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="json-rpc-package">
+<h1>json_rpc package<a class="headerlink" href="#json-rpc-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-json_rpc.variants">
+<span id="json-rpc-variants-module"></span><h2>json_rpc.variants module<a class="headerlink" href="#module-json_rpc.variants" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="json_rpc.variants.ErrorCode">
+<em class="property">class </em><code class="descclassname">json_rpc.variants.</code><code class="descname">ErrorCode</code><a class="reference internal" href="../_modules/json_rpc/variants.html#ErrorCode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#json_rpc.variants.ErrorCode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">enum.Enum</span></code></p>
+<p>An enum object is having error definitions which was defined by the protocol.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference external" href="http://www.jsonrpc.org/specification#error_object">http://www.jsonrpc.org/specification#error_object</a></p>
+</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">code</th>
+<th class="head">message</th>
+<th class="head">meaning</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>-32700</td>
+<td>Parse error</td>
+<td>Invalid JSON was received by the server.  An error occurred on the server while parsing the JSON text.</td>
+</tr>
+<tr class="row-odd"><td>-32600</td>
+<td>Invalid Request</td>
+<td>The JSON sent is not a valid Request object.</td>
+</tr>
+<tr class="row-even"><td>-32601</td>
+<td>Method not found</td>
+<td>The method does not exist / is not available.</td>
+</tr>
+<tr class="row-odd"><td>-32602</td>
+<td>Invalid params</td>
+<td>Invalid method parameter(s).</td>
+</tr>
+<tr class="row-even"><td>-32603</td>
+<td>Internal error</td>
+<td>Internal JSON-RPC error.</td>
+</tr>
+<tr class="row-odd"><td>-32000 to -32099</td>
+<td>Server error</td>
+<td>Reserved for implementation-defined server-errors.</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="json_rpc.variants.ErrorCode.INTERNAL_ERROR">
+<code class="descname">INTERNAL_ERROR</code><em class="property"> = -32603</em><a class="headerlink" href="#json_rpc.variants.ErrorCode.INTERNAL_ERROR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="json_rpc.variants.ErrorCode.INVALID_PARAMS">
+<code class="descname">INVALID_PARAMS</code><em class="property"> = -32602</em><a class="headerlink" href="#json_rpc.variants.ErrorCode.INVALID_PARAMS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="json_rpc.variants.ErrorCode.INVALID_REQUEST">
+<code class="descname">INVALID_REQUEST</code><em class="property"> = -32600</em><a class="headerlink" href="#json_rpc.variants.ErrorCode.INVALID_REQUEST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="json_rpc.variants.ErrorCode.METHOD_NOT_FOUND">
+<code class="descname">METHOD_NOT_FOUND</code><em class="property"> = -32601</em><a class="headerlink" href="#json_rpc.variants.ErrorCode.METHOD_NOT_FOUND" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="json_rpc.variants.ErrorCode.PARSE_ERROR">
+<code class="descname">PARSE_ERROR</code><em class="property"> = -32700</em><a class="headerlink" href="#json_rpc.variants.ErrorCode.PARSE_ERROR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="json_rpc.variants.ErrorCode.UNEXPECTED_ERROR">
+<code class="descname">UNEXPECTED_ERROR</code><em class="property"> = -32099</em><a class="headerlink" href="#json_rpc.variants.ErrorCode.UNEXPECTED_ERROR" title="Permalink to this definition">¶</a></dt>
+<dd><p>error for application specific error which is unexpected</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-json_rpc">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-json_rpc" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="json_rpc.make_request">
+<code class="descclassname">json_rpc.</code><code class="descname">make_request</code><span class="sig-paren">(</span><em>method: str, params: typing.Union[typing.List, typing.Dict[str, typing.Any]], request_id: typing.Union[str, NoneType] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/json_rpc.html#make_request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#json_rpc.make_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function to create a request follows JSON-rpc protocol.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">make_request</span><span class="p">(</span><span class="s1">&#39;aa&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;aa&quot;</span><span class="p">:</span> <span class="s2">&quot;rpc&quot;</span><span class="p">},</span> <span class="s1">&#39;111&#39;</span><span class="p">)</span>
+<span class="go">{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;aa&quot;, &quot;params&quot;: {&quot;aa&quot;: &quot;rpc&quot;}, &quot;id&quot;: &quot;111&quot;}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="json_rpc.register">
+<code class="descclassname">json_rpc.</code><code class="descname">register</code><span class="sig-paren">(</span><em>target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/json_rpc.html#register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#json_rpc.register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator to register functions as Remote procedure.</p>
+<p>In default, rpc method name will be the name of function.
+First argument would be a name of the method.</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@register</span>
+<span class="gp">... </span><span class="k">def</span> <span class="nf">func_x</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@register</span><span class="p">(</span><span class="s1">&#39;named&#39;</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">def</span> <span class="nf">func_named</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="json_rpc.rpc_dispatcher">
+<code class="descclassname">json_rpc.</code><code class="descname">rpc_dispatcher</code><span class="sig-paren">(</span><em>request: typing.Union[typing.List, typing.Dict]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/json_rpc.html#rpc_dispatcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#json_rpc.rpc_dispatcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dispatcher for rpc request.
+Receive a JSON-rpc request then returns a result.
+The request must be follows JSON-rpc protocol.  Basically a dict but it can be a list if it is batch.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, OGURA Daiki.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/apis/json_rpc.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

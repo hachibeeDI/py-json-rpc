@@ -1,0 +1,113 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>json_rpc.error &#8212; py-json-rpc 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.0.4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for json_rpc.error</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">.variants</span> <span class="k">import</span> <span class="n">JSON_RPC_VERSION</span><span class="p">,</span> <span class="n">ErrorCode</span>
+
+
+<span class="n">CODE_TO_MESSAGE</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">ErrorCode</span><span class="o">.</span><span class="n">PARSE_ERROR</span><span class="p">:</span> <span class="s1">&#39;Parse error Invalid JSON was received by the server.  An error occurred on the server while parsing the JSON text.&#39;</span><span class="p">,</span>
+    <span class="n">ErrorCode</span><span class="o">.</span><span class="n">INVALID_REQUEST</span><span class="p">:</span> <span class="s1">&#39;The JSON sent is not a valid Request object.&#39;</span><span class="p">,</span>
+    <span class="n">ErrorCode</span><span class="o">.</span><span class="n">METHOD_NOT_FOUND</span><span class="p">:</span> <span class="s1">&#39;The method does not exist / is not available.&#39;</span><span class="p">,</span>
+    <span class="n">ErrorCode</span><span class="o">.</span><span class="n">INVALID_PARAMS</span><span class="p">:</span> <span class="s1">&#39;Invalid method parameter(s).&#39;</span><span class="p">,</span>
+    <span class="n">ErrorCode</span><span class="o">.</span><span class="n">INTERNAL_ERROR</span><span class="p">:</span> <span class="s1">&#39;Internal JSON-RPC error.&#39;</span><span class="p">,</span>
+    <span class="n">ErrorCode</span><span class="o">.</span><span class="n">UNEXPECTED_ERROR</span><span class="p">:</span> <span class="s1">&#39;unexpected error is occurred&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="create_error_response"><a class="viewcode-back" href="../../apis/json_rpc.html#json_rpc.error.create_error_response">[docs]</a><span class="k">def</span> <span class="nf">create_error_response</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;jsonrpc&#39;</span><span class="p">:</span> <span class="n">JSON_RPC_VERSION</span><span class="p">,</span>
+        <span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="n">code</span><span class="p">,</span>
+            <span class="s1">&#39;message&#39;</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="nb">id</span><span class="p">,</span>
+    <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="code_to_response"><a class="viewcode-back" href="../../apis/json_rpc.html#json_rpc.error.code_to_response">[docs]</a><span class="k">def</span> <span class="nf">code_to_response</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+    <span class="n">defined_message</span> <span class="o">=</span> <span class="n">CODE_TO_MESSAGE</span><span class="p">[</span><span class="n">code</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">create_error_response</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">f</span><span class="s1">&#39;</span><span class="si">{defined_message}</span><span class="s1">. </span><span class="si">{message}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  <li><a href="../json_rpc.html">json_rpc</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, OGURA Daiki.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
