@@ -18,19 +18,19 @@ app = Registrator()
 
 
 @app.register
-def plus(x, y):
+def plus_rpc(x, y):
     return x + y
 
 
 def test_plain():
-    result = plus(1, 2)
+    result = plus_rpc(1, 2)
     assert result == 3, result
 
 
 def test_positional_rpc_call():
     rpc_result = app.dispatch({
         'jsonrpc': '2.0',
-        'method': 'plus',
+        'method': 'plus_rpc',
         'params': [1, 2],
         'id': 111,
     })
@@ -40,7 +40,7 @@ def test_positional_rpc_call():
 def test_named_rpc_call():
     rpc_result = app.dispatch({
         'jsonrpc': '2.0',
-        'method': 'plus',
+        'method': 'plus_rpc',
         'params': {'x': 1, 'y': 2},
         'id': 111,
     })
@@ -50,13 +50,13 @@ def test_named_rpc_call():
 def test_multiple():
     req1 = {
         'jsonrpc': '2.0',
-        'method': 'plus',
+        'method': 'plus_rpc',
         'params': [1, 2],
         'id': 111,
     }
     req2 = {
         'jsonrpc': '2.0',
-        'method': 'plus',
+        'method': 'plus_rpc',
         'params': [10, 20],
         'id': 111,
     }
@@ -68,7 +68,7 @@ def test_multiple():
 def test_notify():
     rpc_result = app.dispatch({
         'jsonrpc': '2.0',
-        'method': 'plus',
+        'method': 'plus_rpc',
         'params': {'x': 1, 'y': 2},
     })
     assert rpc_result is None, rpc_result
@@ -77,13 +77,13 @@ def test_notify():
 def test_notify_multiple():
     req1 = {
         'jsonrpc': '2.0',
-        'method': 'plus',
+        'method': 'plus_rpc',
         'params': [1, 2],
         'id': 111,
     }
     req2 = {
         'jsonrpc': '2.0',
-        'method': 'plus',
+        'method': 'plus_rpc',
         'params': [10, 20],
     }
     rpc_result = app.dispatch([req1, req2])

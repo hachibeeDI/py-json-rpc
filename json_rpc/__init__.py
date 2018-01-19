@@ -2,7 +2,7 @@
 
 from __future__ import print_function, unicode_literals, absolute_import
 
-
+import asyncio
 from uuid import uuid4
 from functools import wraps
 from typing import (
@@ -16,8 +16,6 @@ from typing import (
 
 from .variants import JSON_RPC_VERSION, ErrorCode
 from ._error import create_error_response, code_to_response
-
-RPC_STACK = {}
 
 
 class Registrator:
@@ -42,37 +40,78 @@ class Registrator:
     ...
     """
 
-    def __init__(self):
+    def __init__(self, loop=None):
         self._rpc_stack = {}
+        self._loop = loop
+
+    def _set_rpc(self, name, func):
+        self._rpc_stack[name] = func
+        return func
 
     def register(self, target):
         if isinstance(target, str):
+
             # call as decorator with argument
             def decorate(func):
-
-                @wraps(func)
-                def __inner(*args, **kw):
-                    return func(*args, **kw)
-
-                self._rpc_stack[target] = __inner
-                return __inner
+                return self._set_rpc(target, func)
 
             return decorate
 
         else:
-
             # call as normal decorator
             func = target
-
-            @wraps(func)
-            def __inner(*args, **kw):
-                return func(*args, **kw)
-
-            self._rpc_stack[func.__name__] = __inner
-            return __inner
+            return self._set_rpc(func.__name__, func)
 
     def __call__(self, request):
         return self.register(request)
+
+    def _call(self, id, name, params: Union[List, Dict]) -> Dict:
+        """
+        JSON-RPC supports positional arguments and named arguments.
+        """
+        from inspect import signature
+
+        if name not in self._rpc_stack:
+            return code_to_response(id, ErrorCode.METHOD_NOT_FOUND)
+
+        function = self._rpc_stack[name]
+        parameter_spec = signature(function).parameters
+
+        result = None
+        if isinstance(params, List):
+            if len(params) != len(parameter_spec):
+                return code_to_response(id, ErrorCode.INVALID_PARAMS)
+
+            result = function(*params)
+
+        elif isinstance(params, Dict):
+            if set(params.keys()) != set(parameter_spec.keys()):
+                return code_to_response(id, ErrorCode.INVALID_PARAMS)
+
+            result = function(**params)
+
+        else:
+            return code_to_response(id, ErrorCode.INVALID_REQUEST)
+
+        # notification request has no id
+        if id is None:
+            return None
+
+        return {
+            'jsonrpc': JSON_RPC_VERSION,
+            'result': result,
+            'id': id,
+        }
+
+
+    def _eval(self, jsonrpc, method, id=None, params=None):
+        if params is None:
+            params = []
+
+        try:
+            return self._call(id, method, params)
+        except Exception as e:
+            return code_to_response(id, ErrorCode.UNEXPECTED_ERROR, str(e))
 
     def dispatch(self, request):
         """
@@ -82,11 +121,14 @@ class Registrator:
         """
 
         if isinstance(request, List):
-            return list(filter(None, [_eval(**r) for r in request]))
+            return list(filter(None, [self._eval(**r) for r in request]))
         elif isinstance(request, Dict):
-            return _eval(**request)
+            return self._eval(**request)
         else:
             assert False, 'Invalid request'
+
+
+RPC_STACK = {}
 
 
 def register(target):
