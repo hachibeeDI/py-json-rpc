@@ -1,4 +1,4 @@
-from .variants import JSON_RPC_VERSION, ErrorCode
+from .variants import JSON_RPC_VERSION, ErrorCode, Fail
 
 
 CODE_TO_MESSAGE = {
@@ -25,3 +25,7 @@ def create_error_response(id, code, message):
 def code_to_response(id, code, message=''):
     defined_message = CODE_TO_MESSAGE[code]
     return create_error_response(id, code, f'{defined_message}. {message}')
+
+
+def as_failed(id, code, message=''):
+    return Fail(id, code, message)

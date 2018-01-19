@@ -33,3 +33,54 @@ class ErrorCode(Enum):
 
     UNEXPECTED_ERROR = -32099
     """error for application specific error which is unexpected"""
+
+
+CODE_TO_MESSAGE = {
+    ErrorCode.PARSE_ERROR: 'Parse error Invalid JSON was received by the server.  An error occurred on the server while parsing the JSON text.',
+    ErrorCode.INVALID_REQUEST: 'The JSON sent is not a valid Request object.',
+    ErrorCode.METHOD_NOT_FOUND: 'The method does not exist / is not available.',
+    ErrorCode.INVALID_PARAMS: 'Invalid method parameter(s).',
+    ErrorCode.INTERNAL_ERROR: 'Internal JSON-RPC error.',
+    ErrorCode.UNEXPECTED_ERROR: 'unexpected error is occurred',
+}
+
+
+class Fail:
+    def __init__(self, id, code, msg):
+        self.id = id
+        self.code = code
+        self.message = msg
+
+    def to_response(self):
+        defined_message = CODE_TO_MESSAGE[code]
+        msg = create_error_response(id, code, f'{defined_message}. {self.message}')
+
+        return {
+            'jsonrpc': JSON_RPC_VERSION,
+            'error': {
+                'code': self.code,
+                'message': msg,
+            },
+            'id': self.id,
+        }
+
+
+class Success:
+    def __init__(self, id, result):
+        self.id = id
+        self.result = result
+
+    def __bool__(self):
+        return bool(self.id)
+
+    def to_response(self):
+        """
+        No id request means notification so no response needed
+        """
+        if self.id:
+            return {
+                'jsonrpc': JSON_RPC_VERSION,
+                'result': self.result,
+                'id': self.id,
+            }
+        return None

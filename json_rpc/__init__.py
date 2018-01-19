@@ -5,6 +5,7 @@ from __future__ import print_function, unicode_literals, absolute_import
 import asyncio
 from uuid import uuid4
 from functools import wraps
+from operator import methodcaller
 from typing import (
     Dict,
     List,
@@ -14,9 +15,66 @@ from typing import (
 )
 
 
-from .variants import JSON_RPC_VERSION, ErrorCode
-from ._error import create_error_response, code_to_response
+from .variants import JSON_RPC_VERSION, ErrorCode, Success
+from ._error import create_error_response, code_to_response, as_failed
 
+
+class Evaluator:
+    def __init__(self, rpc_stack):
+        self._rpc_stack = rpc_stack
+
+    def _call(self, id, name, params: Union[List, Dict]) -> Dict:
+        """
+        JSON-RPC supports positional arguments and named arguments.
+        """
+        from inspect import signature
+
+        if name not in self._rpc_stack:
+            return as_failed(id, ErrorCode.METHOD_NOT_FOUND)
+
+        function = self._rpc_stack[name]
+        parameter_spec = signature(function).parameters
+
+        result = None
+        if isinstance(params, List):
+            if len(params) != len(parameter_spec):
+                return as_failed(id, ErrorCode.INVALID_PARAMS)
+
+            result = function(*params)
+
+        elif isinstance(params, Dict):
+            if set(params.keys()) != set(parameter_spec.keys()):
+                return as_failed(id, ErrorCode.INVALID_PARAMS)
+
+            result = function(**params)
+
+        else:
+            return as_failed(id, ErrorCode.INVALID_REQUEST)
+
+        return Success(id, result)
+
+    def _eval(self, jsonrpc, method, id=None, params=None):
+        if params is None:
+            params = []
+
+        try:
+            return self._call(id, method, params)
+        except Exception as e:
+            return as_failed(id, ErrorCode.UNEXPECTED_ERROR, str(e))
+
+    def do(self, request):
+        if isinstance(request, Dict):
+            result = self._eval(**request)
+            return result.to_response()
+        if isinstance(request, List):
+            return list(
+                map(
+                    methodcaller('to_response'),
+                    filter(
+                        None,
+                        [self._eval(**r) for r in request])))
+
+        assert False, f'Invalid request {request}'
 
 class Registrator:
     """
@@ -43,6 +101,7 @@ class Registrator:
     def __init__(self, loop=None):
         self._rpc_stack = {}
         self._loop = loop
+        self._evaluator = Evaluator(self._rpc_stack)
 
     def _set_rpc(self, name, func):
         self._rpc_stack[name] = func
@@ -65,67 +124,13 @@ class Registrator:
     def __call__(self, request):
         return self.register(request)
 
-    def _call(self, id, name, params: Union[List, Dict]) -> Dict:
-        """
-        JSON-RPC supports positional arguments and named arguments.
-        """
-        from inspect import signature
-
-        if name not in self._rpc_stack:
-            return code_to_response(id, ErrorCode.METHOD_NOT_FOUND)
-
-        function = self._rpc_stack[name]
-        parameter_spec = signature(function).parameters
-
-        result = None
-        if isinstance(params, List):
-            if len(params) != len(parameter_spec):
-                return code_to_response(id, ErrorCode.INVALID_PARAMS)
-
-            result = function(*params)
-
-        elif isinstance(params, Dict):
-            if set(params.keys()) != set(parameter_spec.keys()):
-                return code_to_response(id, ErrorCode.INVALID_PARAMS)
-
-            result = function(**params)
-
-        else:
-            return code_to_response(id, ErrorCode.INVALID_REQUEST)
-
-        # notification request has no id
-        if id is None:
-            return None
-
-        return {
-            'jsonrpc': JSON_RPC_VERSION,
-            'result': result,
-            'id': id,
-        }
-
-
-    def _eval(self, jsonrpc, method, id=None, params=None):
-        if params is None:
-            params = []
-
-        try:
-            return self._call(id, method, params)
-        except Exception as e:
-            return code_to_response(id, ErrorCode.UNEXPECTED_ERROR, str(e))
-
     def dispatch(self, request):
         """
         Dispatcher for rpc request.
         Receive a JSON-rpc request then returns a result.
         The request must be follows JSON-rpc protocol.  Basically a dict but it can be a list if it is batch.
         """
-
-        if isinstance(request, List):
-            return list(filter(None, [self._eval(**r) for r in request]))
-        elif isinstance(request, Dict):
-            return self._eval(**request)
-        else:
-            assert False, 'Invalid request'
+        return self._evaluator.do(request)
 
 
 RPC_STACK = {}
