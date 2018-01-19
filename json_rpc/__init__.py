@@ -20,8 +20,80 @@ from ._error import create_error_response, code_to_response
 RPC_STACK = {}
 
 
+class Registrator:
+    """
+    Decorator class instance to register functions as Remote procedure.
+
+    In default, rpc method name will be the name of function.
+    First argument would be a name of the method.
+
+    Example:
+
+    >>> register = Registrator()
+
+    >>> @register
+    ... def func_x(a, b, c):
+    ...     pass
+    ...
+
+    >>> @register('named')
+    ... def func_named(a, b, c):
+    ...     pass
+    ...
+    """
+
+    def __init__(self):
+        self._rpc_stack = {}
+
+    def register(self, target):
+        if isinstance(target, str):
+            # call as decorator with argument
+            def decorate(func):
+
+                @wraps(func)
+                def __inner(*args, **kw):
+                    return func(*args, **kw)
+
+                self._rpc_stack[target] = __inner
+                return __inner
+
+            return decorate
+
+        else:
+
+            # call as normal decorator
+            func = target
+
+            @wraps(func)
+            def __inner(*args, **kw):
+                return func(*args, **kw)
+
+            self._rpc_stack[func.__name__] = __inner
+            return __inner
+
+    def __call__(self, request):
+        return self.register(request)
+
+    def dispatch(self, request):
+        """
+        Dispatcher for rpc request.
+        Receive a JSON-rpc request then returns a result.
+        The request must be follows JSON-rpc protocol.  Basically a dict but it can be a list if it is batch.
+        """
+
+        if isinstance(request, List):
+            return list(filter(None, [_eval(**r) for r in request]))
+        elif isinstance(request, Dict):
+            return _eval(**request)
+        else:
+            assert False, 'Invalid request'
+
+
 def register(target):
     """
+    .. deprecated:: 0.0.5
+        Use class `Registrator` instead.
+
     Decorator to register functions as Remote procedure.
 
     In default, rpc method name will be the name of function.
@@ -117,6 +189,9 @@ def _eval(jsonrpc, method, id=None, params=None):
 
 def rpc_dispatcher(request: Union[List, Dict]):
     """
+    .. deprecated:: 0.0.5
+        Use method of `Registrator` instead.
+
     Dispatcher for rpc request.
     Receive a JSON-rpc request then returns a result.
     The request must be follows JSON-rpc protocol.  Basically a dict but it can be a list if it is batch.
