@@ -3,6 +3,7 @@ from __future__ import (print_function, division, absolute_import, unicode_liter
 
 import unittest
 import asyncio
+from time import time
 
 from nose.tools import eq_
 
@@ -23,19 +24,27 @@ app = Registrator(loop=loop)
 
 @app.register
 async def plus_rpc(x, y):
-    asyncio.sleep(0.3)
+    # await asyncio.sleep(0.3)
     return x + y
 
 
 @app.register
 async def minus(x, y):
-    asyncio.sleep(0.3)
+    # await asyncio.sleep(0.3)
     return x - y
 
 
 @app.register
 async def will_failed_func(x):
     raise ValueError(x)
+
+
+@app.register
+async def heavy_request(a):
+    print(f'start heavy request... {a}sec')
+    await asyncio.sleep(a)
+    print('end heavy request...')
+    return 'home page!'
 
 
 def test_plain():
@@ -137,3 +146,16 @@ def test_failed_async_call():
     })
     assert 'error' in rpc_result, rpc_result
     assert rpc_result['error']['code'] == ErrorCode.UNEXPECTED_ERROR, rpc_result
+
+
+def test_concurrent():
+    req1 = make_request('heavy_request', [1])
+    req2 = make_request('heavy_request', [1])
+    req3 = make_request('heavy_request', [1])
+
+    start = time()
+    rpc_result = app.dispatch([req1, req2, req3])
+    time_took = time() - start
+
+    assert rpc_result[0].get('result') == 'home page!', rpc_result
+    assert time_took < 2, time_took
