@@ -1,3 +1,4 @@
+from asyncio import iscoroutine
 from enum import Enum
 
 
@@ -52,8 +53,8 @@ class Fail:
         self.message = msg
 
     def to_response(self):
-        defined_message = CODE_TO_MESSAGE[code]
-        msg = create_error_response(id, code, f'{defined_message}. {self.message}')
+        defined_message = CODE_TO_MESSAGE[self.code]
+        msg = f'{defined_message}. {self.message}'
 
         return {
             'jsonrpc': JSON_RPC_VERSION,
@@ -64,23 +65,37 @@ class Fail:
             'id': self.id,
         }
 
+    def resulve_async(self, loop):
+        pass
+
 
 class Success:
     def __init__(self, id, result):
         self.id = id
         self.result = result
 
+    def __str__(self):
+        return f'Success <{self.id}: {self.result}>'
+
     def __bool__(self):
-        return bool(self.id)
+        return self.id is not None
 
     def to_response(self):
         """
         No id request means notification so no response needed
         """
-        if self.id:
+        if self.id is not None:
             return {
                 'jsonrpc': JSON_RPC_VERSION,
                 'result': self.result,
                 'id': self.id,
             }
         return None
+
+    def resolve_async(self, loop):
+        """
+        FIXME: this is solution.
+        Can be Failed after resolved?
+        """
+        if iscoroutine(self.result):
+            self.result = loop.run_until_complete(self.result)
