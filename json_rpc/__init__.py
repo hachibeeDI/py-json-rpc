@@ -2,8 +2,7 @@
 
 from __future__ import print_function, unicode_literals, absolute_import
 
-import asyncio
-from asyncio import AbstractEventLoop
+from asyncio import AbstractEventLoop, ensure_future
 from uuid import uuid4
 from functools import wraps
 from operator import methodcaller
@@ -15,7 +14,7 @@ from typing import (
     Any,
 )
 
-from .variants import JSON_RPC_VERSION, ErrorCode, Success
+from .variants import JSON_RPC_VERSION, ErrorCode, Success, AsyncResultsResolver
 from ._error import create_error_response, code_to_response, as_failed
 
 
@@ -24,9 +23,6 @@ class Evaluator:
     def __init__(self, rpc_stack: Dict, loop: Optional[AbstractEventLoop]):
         self._rpc_stack = rpc_stack
         self._loop = loop
-
-    def support_async(self) -> bool :
-        return self._loop is not None
 
     def _call(self, id, name, params: Union[List, Dict]) -> Dict:
         """
@@ -63,24 +59,35 @@ class Evaluator:
             params = []
 
         try:
-            r = self._call(id, method, params)
-            if self.support_async():
-                r.resolve_async(self._loop)
-            return r
+            return self._call(id, method, params)
         except Exception as e:
             return as_failed(id, ErrorCode.UNEXPECTED_ERROR, str(e))
 
     def do(self, request):
-        # TODO: clean up
         if isinstance(request, Dict):
             result = self._eval(**request)
             return result.to_response()
+
         if isinstance(request, List):
-            results = [self._eval(**r) for r in request]
+            results = (self._eval(**r) for r in request)
             responses = map(methodcaller('to_response'), results)
             return [r for r in responses if r]
 
         assert False, f'Invalid request {request}'
+
+
+class AsyncEvaluator(Evaluator):
+    def do(self, request):
+        if isinstance(request, Dict):
+            result = self._eval(**request)
+            return result.resolve_async(self._loop).to_response()
+
+        if isinstance(request, List):
+            results = AsyncResultsResolver([self._eval(**r) for r in request], self._loop)
+            return results.to_response()
+
+        assert False, f'Invalid request {request}'
+
 
 class Registrator:
     """
@@ -107,7 +114,10 @@ class Registrator:
     def __init__(self, loop=None):
         self._rpc_stack = {}
         self._loop = loop
-        self._evaluator = Evaluator(self._rpc_stack, self._loop)
+        if loop:
+            self._evaluator = AsyncEvaluator(self._rpc_stack, self._loop)
+        else:
+            self._evaluator = Evaluator(self._rpc_stack, self._loop)
 
     def _set_rpc(self, name, func):
         self._rpc_stack[name] = func

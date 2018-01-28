@@ -158,4 +158,4 @@ def test_concurrent():
     time_took = time() - start
 
     assert rpc_result[0].get('result') == 'home page!', rpc_result
-    assert time_took < 2, time_took
+    assert time_took < 1.5, time_took
