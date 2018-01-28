@@ -4,6 +4,8 @@
 
 Simple and Pluggable JSON RPC toolkit to declare procedures super easy like Flask.
 
+PY-JSON-RPC supports async function handling!!  It could improve your batch call performance.
+
 
 ## Install
 
@@ -12,9 +14,15 @@ $ pip install py-json-rpc
 ```
 
 
-## Example
+## Sample
+
+
+### None async
+
+Tornado is not a required.  Just an sample to create HTTP handler.  You can use other HTTP handling solution Flask, Django... if you would like to.
 
 ```python
+
 import json
 
 import requests
@@ -71,6 +79,61 @@ if __name__ == '__main__':
     # => {"jsonrpc": "2.0", "result": "cccc  called", "id": "some_uuid_for_you"}
     print(requests.post('http://localhost:8888/rpc', data=json.dumps(make_request('test/hyoe', {'x': 3, 'y': 3}))).text)
     # => "jsonrpc": "2.0", "result": 6, "id": "cff9667f-a520-42cf-9216-ef2fa051a213"}
+
+```
+
+
+### Async
+
+
+```python
+
+loop = asyncio.get_event_loop()
+app = Registrator(loop=loop)
+
+
+@app.register
+async def plus_rpc(x, y):
+    return x + y
+
+
+@app.register
+async def minus(x, y):
+    return x - y
+
+
+@app.register
+async def heavy_request(a):
+    print(f'start heavy request... {a}sec')
+    await asyncio.sleep(a)
+    print('end heavy request...')
+    return 'home page!'
+
+
+"""
+No difference with none async version to call those functions.
+More samples in test code.  Document is under writing...
+"""
+
+
+def test_plain():
+    """
+    The func is going to be async as it was if it was called normally.
+    """
+    result = asyncio.ensure_future(plus_rpc(1, 2))
+    result = loop.run_until_complete(result)
+    assert result == 3, result
+
+
+def test_positional_rpc_call():
+    rpc_result = app.dispatch({
+        'jsonrpc': '2.0',
+        'method': 'plus_rpc',
+        'params': [1, 2],
+        'id': 111,
+    })
+    assert rpc_result.get('result') == 3, rpc_result
+
 ```
 
 
@@ -128,8 +191,6 @@ Greater than or equal to Python 3.6
 
 
 ## Road Map
-
-- async/await support
 
 - Security instruction
 
