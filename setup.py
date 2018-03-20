@@ -9,7 +9,7 @@ readme_content = open('README.md').read()
 
 setup(
     name='py-json-rpc',
-    version='0.0.5',
+    version='0.0.6',
     description='Decorator based toolkit to use JSONRPC easy like Flask. Asyncio supported.',
     long_description=readme_content,
     author='OGURA_Daiki',
