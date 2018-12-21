@@ -3,6 +3,7 @@
 # PY-JSON-RPC
 
 Simple and Pluggable JSON RPC toolkit to declare procedures super easy like Flask.
+You can immediately call your function via HTTP or any other network protocol!
 
 PY-JSON-RPC supports async function handling!!  It could improve your batch call performance.
 
